@@ -7,10 +7,12 @@ import DeleteConfirmation from './components/DeleteConfirmation.jsx';
 import logoImg from './assets/logo.png';
 import { sortPlacesByDistance } from './loc.js';
 
+const storedPlace = JSON.parse(localStorage.getItem('setPickedPlaces')) || []
+
 function App() {
   const modal = useRef();
   const selectedPlace = useRef();
-  const [pickedPlaces, setPickedPlaces] = useState([]);
+  const [pickedPlaces, setPickedPlaces] = useState(storedPlace);
   const [availablePlaces, setAvailablePlaces] = useState([]);
 
   useEffect(() => {
@@ -39,13 +41,17 @@ function App() {
         return prevPickedPlaces;
       }
       const place = AVAILABLE_PLACES.find((place) => place.id === id);
+      localStorage.setItem('setPickedPlaces', JSON.stringify([place, ...prevPickedPlaces]))
       return [place, ...prevPickedPlaces];
     });
   }
 
   function handleRemovePlace() {
-    setPickedPlaces((prevPickedPlaces) =>
-      prevPickedPlaces.filter((place) => place.id !== selectedPlace.current)
+    setPickedPlaces((prevPickedPlaces) => {
+      const currPickedPlaces = prevPickedPlaces.filter((place) => place.id !== selectedPlace.current)
+      localStorage.setItem('setPickedPlaces', JSON.stringify(currPickedPlaces))
+      return (currPickedPlaces)
+    }
     );
     modal.current.close();
   }
