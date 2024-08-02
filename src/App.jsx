@@ -10,10 +10,10 @@ import { sortPlacesByDistance } from './loc.js';
 const storedPlace = JSON.parse(localStorage.getItem('setPickedPlaces')) || []
 
 function App() {
-  const modal = useRef();
   const selectedPlace = useRef();
   const [pickedPlaces, setPickedPlaces] = useState(storedPlace);
   const [availablePlaces, setAvailablePlaces] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(({coords}) => {
@@ -27,12 +27,12 @@ function App() {
   }, [])
 
   function handleStartRemovePlace(id) {
-    modal.current.open();
+    setModalOpen(true);
     selectedPlace.current = id;
   }
 
   function handleStopRemovePlace() {
-    modal.current.close();
+    setModalOpen(false);
   }
 
   function handleSelectPlace(id) {
@@ -53,12 +53,12 @@ function App() {
       return (currPickedPlaces)
     }
     );
-    modal.current.close();
+    setModalOpen(false);
   }
 
   return (
     <>
-      <Modal ref={modal}>
+      <Modal open={modalOpen} onClose={handleStopRemovePlace} >
         <DeleteConfirmation
           onCancel={handleStopRemovePlace}
           onConfirm={handleRemovePlace}
